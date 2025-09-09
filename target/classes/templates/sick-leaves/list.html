@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Управление больничными листами - Больничная система</title>
+  <link rel="stylesheet" th:href="@{/styles/sick-leaves.css}">
+</head>
+<body>
+
+<main>
+  <div class="tab-container">
+    <div class="tab-buttons">
+      <button class="tab-button active" onclick="openTab('all-sick-leaves')">Все больничные</button>
+      <button class="tab-button" onclick="openTab('by-diagnosis')">По диагнозу</button>
+      <button class="tab-button" onclick="openTab('filter-sick-leaves')">Фильтр больничных</button>
+      <button class="tab-button" onclick="openTab('add-sick-leave')">Добавить больничный</button>
+    </div>
+
+    <!-- Статический запрос - все больничные листы -->
+    <div id="all-sick-leaves" class="tab-content active">
+      <h2>Список всех больничных листов</h2>
+      <div class="sick-leave-list">
+        <th:block th:each="sickLeave : ${sickLeaves}">
+          <div class="sick-leave-card">
+            <h3>Пациент: <span th:text="${sickLeave.patientName}"></span></h3>
+            <p>Врач: <span th:text="${sickLeave.doctorName}"></span></p>
+            <p>Диагноз: <span th:text="${sickLeave.diagnosis}"></span></p>
+            <p>Дата начала: <span th:text="${sickLeave.startDate}"></span></p>
+            <p>Дата окончания: <span th:text="${sickLeave.endDate} ?: 'не указана'"></span></p>
+            <p>Статус: <span th:text="${sickLeave.status}"></span></p>
+          </div>
+        </th:block>
+      </div>
+    </div>
+
+    <!-- Параметрический запрос - больничные по диагнозу -->
+    <div id="by-diagnosis" class="tab-content">
+      <h2>Больничные листы по диагнозу</h2>
+      <div class="sick-leave-filters">
+        <div class="filter-group">
+          <label for="diagnosis-search">Введите диагноз:</label>
+          <input type="text" id="diagnosis-search" placeholder="Например, Грипп">
+        </div>
+        <button onclick="searchByDiagnosis()">Найти больничные</button>
+      </div>
+      <div id="diagnosis-results" class="sick-leave-list">
+        <!-- Результаты будут загружаться здесь -->
+      </div>
+    </div>
+
+    <!-- Динамический запрос - фильтр больничных листов -->
+    <div id="filter-sick-leaves" class="tab-content">
+      <h2>Фильтр больничных листов</h2>
+      <div class="sick-leave-container">
+        <div class="sick-leave-filters">
+          <div class="filter-group">
+            <label for="patientName">ФИО пациента:</label>
+            <input type="text" id="patientName" placeholder="Часть имени">
+          </div>
+
+          <div class="filter-group">
+            <label for="doctorName">ФИО врача:</label>
+            <input type="text" id="doctorName" placeholder="Часть имени">
+          </div>
+
+          <div class="filter-group">
+            <label for="diagnosis">Диагноз:</label>
+            <input type="text" id="diagnosis" placeholder="Часть диагноза">
+          </div>
+
+          <div class="filter-group">
+            <label for="status">Статус:</label>
+            <select id="status">
+              <option value="">Любой статус</option>
+              <option value="active">Активный</option>
+              <option value="closed">Закрытый</option>
+              <option value="extended">Продленный</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label>Дата начала:</label>
+            <input type="date" id="startDateFrom" placeholder="От">
+            <input type="date" id="startDateTo" placeholder="До">
+          </div>
+
+          <button onclick="applySickLeaveFilters()">Применить фильтры</button>
+        </div>
+
+        <div id="filter-results" class="sick-leave-list">
+          <!-- Результаты фильтрации будут загружаться здесь -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Форма добавления больничного листа -->
+    <div id="add-sick-leave" class="tab-content">
+      <h2>Добавить новый больничный лист</h2>
+      <form th:action="@{/sick-leaves}" method="post" class="sick-leave-form">
+        <div class="form-group">
+          <label for="patientId">ID пациента:</label>
+          <input type="number" id="patientId" name="patientId" required>
+        </div>
+        <div class="form-group">
+          <label for="doctorId">ID врача:</label>
+          <input type="number" id="doctorId" name="doctorId" required>
+        </div>
+        <div class="form-group">
+          <label for="startDate">Дата начала:</label>
+          <input type="date" id="startDate" name="startDate" required>
+        </div>
+        <div class="form-group">
+          <label for="endDate">Дата окончания:</label>
+          <input type="date" id="endDate" name="endDate">
+        </div>
+        <div class="form-group">
+          <label for="diagnosis">Диагноз:</label>
+          <input type="text" id="diagnosis" name="diagnosis" required>
+        </div>
+        <div class="form-group">
+          <label for="status">Статус:</label>
+          <select id="status" name="status" required>
+            <option value="active">Активный</option>
+            <option value="closed">Закрытый</option>
+            <option value="extended">Продленный</option>
+          </select>
+        </div>
+        <button type="submit">Добавить больничный</button>
+      </form>
+    </div>
+  </div>
+</main>
+
+<script th:src="@{/js/sick-leaves.js}"></script>
+</body>
+</html>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Управление пациентами - Больничная система</title>
+    <link rel="stylesheet" th:href="@{/styles/patients.css}">
+</head>
+<body>
+
+<main>
+    <div class="tab-container">
+        <div class="tab-buttons">
+            <button class="tab-button active" onclick="openTab('all-patients')">Все пациенты</button>
+            <button class="tab-button" onclick="openTab('by-diagnosis')">По диагнозу</button>
+            <button class="tab-button" onclick="openTab('filter-patients')">Фильтр пациентов</button>
+        </div>
+
+        <!-- Статический запрос - все пациенты -->
+        <div id="all-patients" class="tab-content active">
+            <h2>Список всех пациентов</h2>
+            <div class="patient-list">
+                <th:block th:each="patient : ${patients}">
+                    <div class="patient-card">
+                        <h3 th:text="${patient.fullName}"></h3>
+                        <p>Возраст: <span th:text="${patient.age}"></span></p>
+                        <p>Диагноз: <span th:text="${patient.diagnosis}"></span></p>
+                        <p>Палата: <span th:text="${patient.wardNumber} + ' (' + ${patient.wardType} + ')'"></span></p>
+                        <p>Лечащий врач: <span th:text="${patient.attendingPhysician}"></span></p>
+                        <p>Дата поступления: <span th:text="${patient.admissionDate}"></span></p>
+                        <p>Дата выписки: <span th:text="${patient.dischargeDate} ?: 'не выписан'"></span></p>
+
+                    </div>
+                </th:block>
+            </div>
+        </div>
+
+        <!-- Параметрический запрос - пациенты по диагнозу -->
+        <div id="by-diagnosis" class="tab-content">
+            <h2>Пациенты по диагнозу</h2>
+            <div class="patient-filters">
+                <div class="filter-group">
+                    <label for="diagnosis-search">Введите диагноз:</label>
+                    <input type="text" id="diagnosis-search" placeholder="Например, Грипп">
+                </div>
+                <button onclick="searchByDiagnosis()">Найти пациентов</button>
+            </div>
+            <div id="diagnosis-results" class="patient-list">
+                <!-- Результаты будут загружаться здесь -->
+            </div>
+        </div>
+
+        <!-- Динамический запрос - фильтр пациентов -->
+        <div id="filter-patients" class="tab-content">
+            <h2>Фильтр пациентов</h2>
+            <div class="patient-container">
+                <div class="patient-filters">
+                    <div class="filter-group">
+                        <label for="diagnosis">Диагноз:</label>
+                        <input type="text" id="diagnosis" placeholder="Любой диагноз">
+                    </div>
+
+                    <div class="filter-group">
+                        <label>Возраст:</label>
+                        <input type="number" id="minAge" placeholder="От" min="0">
+                        <input type="number" id="maxAge" placeholder="До" min="0">
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="wardType">Тип палаты:</label>
+                        <select id="wardType">
+                            <option value="">Любой тип</option>
+                            <option value="standard">Стандарт</option>
+                            <option value="vip">VIP</option>
+                            <option value="intensive">Интенсивная терапия</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="physician">Лечащий врач:</label>
+                        <input type="text" id="physician" placeholder="ФИО врача">
+                    </div>
+
+                    <div class="filter-group">
+                        <label>Дата поступления:</label>
+                        <input type="date" id="admissionDateFrom" placeholder="От">
+                        <input type="date" id="admissionDateTo" placeholder="До">
+                    </div>
+
+                    <button onclick="applyPatientFilters()">Применить фильтры</button>
+                </div>
+
+                <div id="filter-results" class="patient-list">
+                    <!-- Результаты фильтрации будут загружаться здесь -->
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+
+<script th:src="@{/js/patients.js}"></script>
+</body>
+</html>

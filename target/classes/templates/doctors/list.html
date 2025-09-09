@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Управление врачами - Больничная система</title>
+  <link rel="stylesheet" th:href="@{/styles/doctors.css}">
+</head>
+<body>
+
+<main>
+  <div class="tab-container">
+    <div class="tab-buttons">
+      <button class="tab-button active" onclick="openTab('all-doctors')">Все врачи</button>
+      <button class="tab-button" onclick="openTab('by-specialization')">По специализации</button>
+      <button class="tab-button" onclick="openTab('filter-doctors')">Фильтр врачей</button>
+      <button class="tab-button" onclick="openTab('add-doctor')">Добавить врача</button>
+    </div>
+
+    <!-- Статический запрос - все врачи -->
+    <div id="all-doctors" class="tab-content active">
+      <h2>Список всех врачей</h2>
+      <div class="doctor-list">
+        <th:block th:each="doctor : ${doctors}">
+          <div class="doctor-card">
+            <h3 th:text="${doctor.fullName}"></h3>
+            <p>Специализация: <span th:text="${doctor.specialization}"></span></p>
+            <p>Лицензия: <span th:text="${doctor.licenseNumber}"></span></p>
+            <div class="doctor-actions">
+              <button class="delete-doctor-btn"
+                      th:attr="data-doctor-id=${doctor.id},
+                                             data-doctor-name=${doctor.fullName}">
+                Удалить
+              </button>
+            </div>
+          </div>
+        </th:block>
+      </div>
+    </div>
+
+    <!-- Параметрический запрос - врачи по специализации -->
+    <div id="by-specialization" class="tab-content">
+      <h2>Врачи по специализации</h2>
+      <div class="doctor-filters">
+        <div class="filter-group">
+          <label for="specialization-search">Введите специализацию:</label>
+          <input type="text" id="specialization-search" placeholder="Например, Хирург">
+        </div>
+        <button onclick="searchBySpecialization()">Найти врачей</button>
+      </div>
+      <div id="specialization-results" class="doctor-list">
+        <!-- Результаты будут загружаться здесь -->
+      </div>
+    </div>
+
+    <!-- Динамический запрос - фильтр врачей -->
+    <div id="filter-doctors" class="tab-content">
+      <h2>Фильтр врачей</h2>
+      <div class="doctor-container">
+        <div class="doctor-filters">
+          <div class="filter-group">
+            <label for="fullName">ФИО врача:</label>
+            <input type="text" id="fullName" placeholder="Часть имени">
+          </div>
+
+          <div class="filter-group">
+            <label for="specialization">Специализация:</label>
+            <input type="text" id="specialization" placeholder="Например, Терапевт">
+          </div>
+
+          <div class="filter-group">
+            <label for="licenseNumber">Номер лицензии:</label>
+            <input type="text" id="licenseNumber" placeholder="Номер лицензии">
+          </div>
+
+          <button onclick="applyDoctorFilters()">Применить фильтры</button>
+        </div>
+
+        <div id="filter-results" class="doctor-list">
+          <!-- Результаты фильтрации будут загружаться здесь -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Форма добавления врача -->
+    <div id="add-doctor" class="tab-content">
+      <h2>Добавить нового врача</h2>
+      <form th:action="@{/doctors}" method="post" class="doctor-form">
+        <div class="form-group">
+          <label for="fullName">ФИО врача:</label>
+          <input type="text" id="fullName" name="fullName" required>
+        </div>
+        <div class="form-group">
+          <label for="specialization">Специализация:</label>
+          <input type="text" id="specialization" name="specialization" required>
+        </div>
+        <div class="form-group">
+          <label for="licenseNumber">Номер лицензии:</label>
+          <input type="text" id="licenseNumber" name="licenseNumber" required>
+        </div>
+        <button type="submit">Добавить врача</button>
+      </form>
+    </div>
+  </div>
+</main>
+
+<script th:src="@{/js/doctors.js}"></script>
+</body>
+</html>
